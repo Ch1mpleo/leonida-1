@@ -63,6 +63,7 @@ import threading
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
+from typing import NoReturn
 
 if __name__ == "__main__" and sys.version_info < (3, 12):   # before code an older Python can't run
     sys.exit("ERROR: Python 3.12 or newer is needed: https://www.python.org/downloads/")
@@ -102,7 +103,7 @@ def log(msg: str) -> None:
     print(line, flush=True)
 
 
-def fail(msg: str) -> "None":
+def fail(msg: str) -> NoReturn:
     board = leonida_tui.current_board()
     if board is not None:
         stage = leonida_tui.current_stage()
@@ -375,7 +376,6 @@ def match_version(game: str) -> dict | None:
     return next((v for v in versions() if not probe_mismatches(game, v)), None)
 
 
-<<<<<<< HEAD
 def manifest_presence(game: str, version: dict) -> tuple[int, list[str], list[str], list[str]]:
     """How much of a version's manifest the folder holds, from names and sizes only: (files present with the
     manifest's size, the names that are missing or not a regular file, the names with another size, and
@@ -435,10 +435,7 @@ def partial_version_message(game: str, version: dict) -> str | None:
 
 def load_version(game: str) -> dict:
     reports, candidates = [], []
-=======
-def load_version(game: str) -> dict | None:
     reports = []
->>>>>>> bbc39874b (chore(build): Added missing types to build.py)
     for version in versions():
         mismatches = probe_mismatches(game, version)
         if not mismatches:
@@ -1884,7 +1881,6 @@ def keep_recorded_fallback(flag: str, work: str) -> bool:
     return True
 
 
-<<<<<<< HEAD
 def max_subgroup_decider(vulkaninfo_text: str):
     """(size, device, left_out): the smallest maxSubgroupSize vulkaninfo reports (text or --json output), the name
     of the device that reports it (None when the output names no devices), and the names of the CPU devices left
@@ -1892,10 +1888,6 @@ def max_subgroup_decider(vulkaninfo_text: str):
     ranks it below every GPU (runtime/src/vulkan_device_filter.h, tools/vk_subgroup_info.py device_rank), and
     llvmpipe's maxSubgroupSize of 8 would otherwise turn emulation on beside a GPU with native wave64. size is
     None when it can't be told."""
-=======
-def smallest_max_subgroup(vulkaninfo_text: str) -> int | None:
-    """The smallest maxSubgroupSize vulkaninfo reports over all devices (text or --json output), or None."""
->>>>>>> bbc39874b (chore(build): Added missing types to build.py)
     size = r'maxSubgroupSize"?\s*[=:]\s*(\d+)'
     # A device's own name is the least indented one; deeper ones (VK_KHR_maintenance7's layered APIs, e.g.
     # MoltenVK's Metal device, in both the text and the --json output) belong to the device above them.
