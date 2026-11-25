@@ -340,32 +340,11 @@ def validate_json_path(path):
 
 
 def write_json_report(path, data):
-    """Create missing parent directories and write `data` atomically as LF-terminated JSON, or return an error."""
-    parent = os.path.dirname(os.path.abspath(path))
-    if parent:
-        try:
-            os.makedirs(parent, exist_ok=True)
-        except OSError as e:
-            return f"cannot create directory for --json {path}: {e.strerror or e}"
-    tmp_path = None
+    """Write `data` atomically as LF-terminated JSON (preserving symlinks), or return an error string."""
     try:
-        with tempfile.NamedTemporaryFile(
-            "w", encoding="utf-8", newline="\n",
-            dir=parent or ".", prefix=".ps_helper_probe-", suffix=".tmp", delete=False,
-        ) as fh:
-            tmp_path = fh.name
-            json.dump(data, fh, indent=1)
-            fh.write("\n")
-        replace_retry(tmp_path, path)
-        tmp_path = None
+        _write_json_atomic(path, data)
     except OSError as e:
         return f"cannot write --json {path}: {e.strerror or e}"
-    finally:
-        if tmp_path is not None:
-            try:
-                os.unlink(tmp_path)
-            except OSError:
-                pass
     return None
 
 
