@@ -290,7 +290,7 @@ Current limits, by design:
   `scripts/build_runtime.ps1` cl.exe fallback never builds it. See [docs/gameinput.md](../docs/gameinput.md) for the mapping, the `LEONIDA_DS_*` settings and what is
   unverified.
 
-- `bcrypt.dll` — `BCryptGenRandom` (`shims/bcrypt_rng.cpp`): delegates to host `ProcessPrng`,
+- `bcrypt.dll` — `BCryptGenRandom` (`shims/bcrypt_rng.cpp`): delegates to host
   `BCryptGenRandom` or `SystemFunction036` (RtlGenRandom). For reproducible diagnostics and testing, setting
   `LEONIDA_RNG_SEED` to a 64-bit integer seed (decimal or `0x` hex) switches the RNG to a deterministic splitmix64
   generator.
