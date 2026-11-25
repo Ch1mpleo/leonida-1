@@ -456,7 +456,9 @@ def main(argv=None):
     try:
         names = read_mount_lists(a.mount)
     except OSError as error:
-        print(f"bink_names: error: {error.filename or a.mount}: {error.strerror or error}", file=sys.stderr)
+        path = error.filename or ", ".join(a.mount)
+        where = f"{path}: " if path else ""
+        print(f"bink_names: error: {where}{error.strerror or error}", file=sys.stderr)
         return 1
     except ValueError as error:
         print(f"bink_names: error: {error}", file=sys.stderr)
@@ -464,12 +466,18 @@ def main(argv=None):
     try:
         streams = load_streams(a.source, skip_report=a.out if a.out and os.path.isfile(a.out) else None)
     except (OSError, csv.Error, ValueError) as error:
-        print(f"bink_names: error: {a.source}: {error}", file=sys.stderr)
+        if isinstance(error, OSError):
+            print(f"bink_names: error: {error.filename or a.source}: {error.strerror or error}", file=sys.stderr)
+        else:
+            print(f"bink_names: error: {a.source}: {error}", file=sys.stderr)
         return 1
     try:
         pins = load_pins(a.pins)
     except (OSError, csv.Error, ValueError) as error:
-        print(f"bink_names: error: {a.pins}: {error}", file=sys.stderr)
+        if isinstance(error, OSError):
+            print(f"bink_names: error: {error.filename or a.pins}: {error.strerror or error}", file=sys.stderr)
+        else:
+            print(f"bink_names: error: {a.pins}: {error}", file=sys.stderr)
         return 1
     try:
         rows, unmatched = name_streams(names, streams, pins, a.max_skip)
@@ -483,7 +491,7 @@ def main(argv=None):
         try:
             write(a.out, rows, unmatched, summary)
         except OSError as error:
-            print(f"bink_names: error: cannot write {a.out}: {error}", file=sys.stderr)
+            print(f"bink_names: error: cannot write {error.filename or a.out}: {error.strerror or error}", file=sys.stderr)
             return 2
     print(f"{len(names)} list entries, {len(streams)} streams: "
           + ", ".join(f"{counts[c]} {c}" for c in CONFIDENCES)
