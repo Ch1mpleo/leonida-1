@@ -78,9 +78,10 @@ of the x86-64 → arm64 groundwork.
 ## Retail executable census (1.0.2.1)
 
 Measured on `game_scarlett_master.exe` (Xbox Series `1.0.2.1`, 120,181,760 bytes) with
-`python -I tools/recomp_census.py <exe> --out <dir>` at `main` `bcaa13dad` with PR `#1121`
-(`X64-RECOMP-VEX-BOUNDS`, which fixes the truncated VEX/EVEX `IndexError` and `vzeroupper` desync
-that otherwise abort the census on `main`). Aggregate counts only; no game bytes or code.
+`python -I tools/recomp_census.py <exe> --out <dir>` at `main` `bcaa13dad` with PR
+[#1121](https://github.com/ubiquitarianism/leonida/pull/1121) (`old-pr/9855`, which fixes the truncated
+VEX/EVEX `IndexError` and `vzeroupper` desync that otherwise abort the census on `main`). Aggregate
+counts only; no game bytes or code.
 
 | Metric | Measured |
 |---|---|
@@ -99,3 +100,7 @@ Top unhandled / hazard mnemonics (VEX-prefixed SIMD/AVX `v*` opcodes dominate):
   `v2e` (75,814), `v0c` (74,738), `v58` (71,159), `vc2` (70,707), `v5c` (59,246),
   `v77` (48,224), `va8` (46,138), `vb8` (44,516), `v4a` (41,775).
 - **Non-VEX:** `jcc` (41,099), `decode:op_90` (41,006), `bt` (18,009), `cmpxchg` (17,878).
+
+Note on `decode:op_90`: `0x90` (bare `nop`) is missing from `PRIMARY` on `main` (the `xchg` loop starts
+at `0x91`), and `recomp_census.py` stops decoding a function at its first decode error, so decoded
+instruction counts and coverage undercount functions that hit `0x90`.
