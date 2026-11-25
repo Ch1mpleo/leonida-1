@@ -625,6 +625,28 @@ def _write_json_atomic(path: str, payload: dict) -> None:
         raise
 
 
+def _write_json_atomic(path: str, payload: dict) -> None:
+    gm._make_parent(path)
+    parent = os.path.dirname(os.path.abspath(path)) or "."
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", newline="\n",
+            dir=parent, prefix=".script_qtable-", suffix=".tmp", delete=False,
+        ) as f:
+            tmp_path = f.name
+            json.dump(payload, f, indent=1)
+            f.write("\n")
+        replace_retry(tmp_path, path)
+        tmp_path = None
+    finally:
+        if tmp_path is not None:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("target", help="carved script directory, script.rpf archive, or joined .bin file")
